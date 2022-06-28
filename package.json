@@ -1,0 +1,54 @@
+{
+  "name": "hermione-oauth",
+  "version": "1.0.0",
+  "description": "Plugin for convenient setting of authorization header with OAuth token",
+  "main": "build/index.js",
+  "files": [
+    "build",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc --build",
+    "clean": "rimraf build/ *.tsbuildinfo",
+    "eslint": "eslint src --config '.eslintrc.js' --ignore-path '.eslintignore'",
+    "lint": "npm run eslint && npm run style",
+    "prepack": "npm run clean && npm run build",
+    "prettier": "prettier 'src/**/*.ts' '**/*.json' --ignore-path '.prettierignore'",
+    "reformat": "npm run eslint -- --fix && npm run prettier -- --write",
+    "style": "npm run prettier -- --check",
+    "unit": "jest --config 'jest.config.js' --passWithNoTests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gemini-testing/hermione-oauth.git"
+  },
+  "engines": {
+    "node": ">= 12.0.0"
+  },
+  "keywords": [
+    "hermione",
+    "oauth"
+  ],
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/gemini-testing/hermione-oauth/issues"
+  },
+  "homepage": "https://github.com/gemini-testing/hermione-oauth#readme",
+  "devDependencies": {
+    "@types/jest": "28.1.3",
+    "@typescript-eslint/parser": "5.30.0",
+    "@typescript-eslint/eslint-plugin": "5.30.0",
+    "eslint": "8.18.0",
+    "eslint-config-gemini-testing": "3.0.0",
+    "jest": "28.1.1",
+    "jest-extended": "2.0.0",
+    "prettier": "2.7.1",
+    "rimraf": "3.0.2",
+    "ts-jest": "28.0.5",
+    "typescript": "4.7.4"
+  },
+  "dependencies": {},
+  "peerDependencies": {
+    "hermione": ">=3.13.0"
+  }
+}
