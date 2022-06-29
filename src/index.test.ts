@@ -16,7 +16,7 @@ describe("hermione-oauth", () => {
     const hermioneMock = (browsers: Record<string, Hermione.BrowserConfig>): Hermione => {
         const emitter = new EventEmitter() as unknown as Hermione;
 
-        emitter.events = { INIT: "init" } as Hermione.EVENTS;
+        emitter.events = { BEGIN: "begin" } as Hermione.EVENTS;
         emitter.config = {
             forBrowser: (id: string) => browsers[id],
             getBrowserIds: () => Object.keys(browsers),
@@ -30,7 +30,7 @@ describe("hermione-oauth", () => {
         const hermione = hermioneMock({ "<bro-id>": browser(config) });
 
         plugin(hermione, { enabled: false });
-        hermione.emit(hermione.events.INIT);
+        hermione.emit(hermione.events.BEGIN);
 
         expect(config).toEqual({ headers: { "<foo>": "<bar>" } });
     });
@@ -40,7 +40,7 @@ describe("hermione-oauth", () => {
         const hermione = hermioneMock({ "<bro1-id>": browser(config1), "<bro2-id>": browser(config2) });
 
         plugin(hermione, { enabled: true, token: "123456789" });
-        hermione.emit(hermione.events.INIT);
+        hermione.emit(hermione.events.BEGIN);
 
         expect(config1).toEqual({ headers: { "<foo>": "<bar>", Authorization: "OAuth 123456789" } });
         expect(config2).toEqual({ headers: { "<baz>": "<quux>", Authorization: "OAuth 123456789" } });
@@ -62,7 +62,7 @@ describe("hermione-oauth", () => {
         const hermione = hermioneMock({ "<bro1-id>": browser(config1), "<bro2-id>": browser(config2) });
 
         plugin(hermione, { enabled: true, token: "/foo/bar" });
-        hermione.emit(hermione.events.INIT);
+        hermione.emit(hermione.events.BEGIN);
 
         expect(config1).toEqual({ headers: { "<foo>": "<bar>", Authorization: "OAuth 987654321" } });
         expect(config2).toEqual({ headers: { "<baz>": "<quux>", Authorization: "OAuth 987654321" } });
