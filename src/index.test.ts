@@ -46,6 +46,16 @@ describe("hermione-oauth", () => {
         expect(config2).toEqual({ headers: { "<baz>": "<quux>", Authorization: "OAuth 123456789" } });
     });
 
+    test("should not set token if authorization header is already set", () => {
+        const config = { headers: { Authorization: "<foo>" } };
+        const hermione = hermioneMock({ "<bro-id>": browser(config) });
+
+        plugin(hermione, { enabled: true, token: "123456789" });
+        hermione.emit(hermione.events.BEGIN);
+
+        expect(config).toEqual({ headers: { Authorization: "<foo>" } });
+    });
+
     test("should read token from file when it is given as absolute path", () => {
         const hermione = hermioneMock({ "<bro-id>": browser() });
 
@@ -66,5 +76,18 @@ describe("hermione-oauth", () => {
 
         expect(config1).toEqual({ headers: { "<foo>": "<bar>", Authorization: "OAuth 987654321" } });
         expect(config2).toEqual({ headers: { "<baz>": "<quux>", Authorization: "OAuth 987654321" } });
+    });
+
+    test("should not set token from file if authorization header is already set", () => {
+        readTokenMock.default.mockReturnValue("987654321");
+
+        const config = { headers: { Authorization: "<foo>" } };
+        const hermione = hermioneMock({ "<bro-id>": browser(config) });
+
+        plugin(hermione, { enabled: true, token: "/foo/bar" });
+
+        hermione.emit(hermione.events.BEGIN);
+
+        expect(config).toEqual({ headers: { Authorization: "<foo>" } });
     });
 });
