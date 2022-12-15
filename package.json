@@ -1,6 +1,6 @@
 {
   "name": "hermione-oauth",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Plugin for convenient setting of authorization header with OAuth token",
   "main": "build/index.js",
   "files": [
