@@ -18,7 +18,7 @@ export = (hermione: Hermione, options: Record<string, unknown>): void => {
         hermione.config.getBrowserIds().forEach(browserId => {
             const browserConfig = hermione.config.forBrowser(browserId);
 
-            browserConfig.headers = { ...browserConfig.headers, Authorization: `OAuth ${token}` };
+            browserConfig.headers = { Authorization: `OAuth ${token}`, ...browserConfig.headers };
         });
     });
 };
