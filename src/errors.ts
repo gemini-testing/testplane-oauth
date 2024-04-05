@@ -1,6 +1,6 @@
 class PluginError extends Error {
     constructor(message: string) {
-        super(`hermione-oauth: ${message}`);
+        super(`@testplane/oauth: ${message}`);
     }
 }
 
