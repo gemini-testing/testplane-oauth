@@ -1,6 +1,6 @@
 {
   "name": "@testplane/oauth",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Plugin for convenient setting of authorization header with OAuth token",
   "main": "build/index.js",
   "files": [
