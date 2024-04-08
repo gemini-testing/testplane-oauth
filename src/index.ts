@@ -1,11 +1,11 @@
 import path from "path";
 
-import type Hermione from "hermione";
+import type Testplane from "testplane";
 
 import { parseConfig } from "./config";
 import readToken from "./read-token";
 
-export = (hermione: Hermione, options: Record<string, unknown>): void => {
+export = (testplane: Testplane, options: Record<string, unknown>): void => {
     const config = parseConfig(options);
 
     if (!config.enabled) {
@@ -14,9 +14,9 @@ export = (hermione: Hermione, options: Record<string, unknown>): void => {
 
     const token = path.isAbsolute(config.token) ? readToken(config.token, config.help) : config.token;
 
-    hermione.on(hermione.events.BEGIN, () => {
-        hermione.config.getBrowserIds().forEach(browserId => {
-            const browserConfig = hermione.config.forBrowser(browserId);
+    testplane.on(testplane.events.BEGIN, () => {
+        testplane.config.getBrowserIds().forEach(browserId => {
+            const browserConfig = testplane.config.forBrowser(browserId);
 
             browserConfig.headers = { Authorization: `OAuth ${token}`, ...browserConfig.headers };
         });

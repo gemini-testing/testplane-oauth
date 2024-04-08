@@ -1,46 +1,49 @@
 import { EventEmitter } from "events";
 
-import type Hermione from "hermione";
+import type Testplane from "testplane";
+import type { Config } from "testplane";
 
 import plugin from "./";
 import * as readToken from "./read-token";
+
+type BrowserConfig = Config["browsers"][string];
 
 jest.mock("./config", () => ({ parseConfig: jest.fn(opts => opts) }));
 
 jest.mock("./read-token");
 const readTokenMock = readToken as jest.Mocked<typeof readToken>;
 
-describe("hermione-oauth", () => {
-    const browser = (config: object = {}): Hermione.BrowserConfig => config as unknown as Hermione.BrowserConfig;
+describe("@testplane/oauth", () => {
+    const browser = (config: object = {}): BrowserConfig => config as unknown as BrowserConfig;
 
-    const hermioneMock = (browsers: Record<string, Hermione.BrowserConfig>): Hermione => {
-        const emitter = new EventEmitter() as unknown as Hermione;
+    const testplaneMock = (browsers: Record<string, BrowserConfig>): Testplane => {
+        const emitter = new EventEmitter() as any;
 
-        emitter.events = { BEGIN: "begin" } as Hermione.EVENTS;
+        emitter.events = { BEGIN: "begin" }
         emitter.config = {
             forBrowser: (id: string) => browsers[id],
             getBrowserIds: () => Object.keys(browsers),
-        } as Hermione.Config;
+        } as Config;
 
         return emitter;
     };
 
     test("should do nothing if plugin is disabled", () => {
         const config = { headers: { "<foo>": "<bar>" } };
-        const hermione = hermioneMock({ "<bro-id>": browser(config) });
+        const testplane = testplaneMock({ "<bro-id>": browser(config) });
 
-        plugin(hermione, { enabled: false });
-        hermione.emit(hermione.events.BEGIN);
+        plugin(testplane, { enabled: false });
+        testplane.emit(testplane.events.BEGIN);
 
         expect(config).toEqual({ headers: { "<foo>": "<bar>" } });
     });
 
     test("should set token for each browser config", () => {
         const [config1, config2] = [{ headers: { "<foo>": "<bar>" } }, { headers: { "<baz>": "<quux>" } }];
-        const hermione = hermioneMock({ "<bro1-id>": browser(config1), "<bro2-id>": browser(config2) });
+        const testplane = testplaneMock({ "<bro1-id>": browser(config1), "<bro2-id>": browser(config2) });
 
-        plugin(hermione, { enabled: true, token: "123456789" });
-        hermione.emit(hermione.events.BEGIN);
+        plugin(testplane, { enabled: true, token: "123456789" });
+        testplane.emit(testplane.events.BEGIN);
 
         expect(config1).toEqual({ headers: { "<foo>": "<bar>", Authorization: "OAuth 123456789" } });
         expect(config2).toEqual({ headers: { "<baz>": "<quux>", Authorization: "OAuth 123456789" } });
@@ -48,18 +51,18 @@ describe("hermione-oauth", () => {
 
     test("should not set token if authorization header is already set", () => {
         const config = { headers: { Authorization: "<foo>" } };
-        const hermione = hermioneMock({ "<bro-id>": browser(config) });
+        const testplane = testplaneMock({ "<bro-id>": browser(config) });
 
-        plugin(hermione, { enabled: true, token: "123456789" });
-        hermione.emit(hermione.events.BEGIN);
+        plugin(testplane, { enabled: true, token: "123456789" });
+        testplane.emit(testplane.events.BEGIN);
 
         expect(config).toEqual({ headers: { Authorization: "<foo>" } });
     });
 
     test("should read token from file when it is given as absolute path", () => {
-        const hermione = hermioneMock({ "<bro-id>": browser() });
+        const testplane = testplaneMock({ "<bro-id>": browser() });
 
-        plugin(hermione, { enabled: true, token: "/foo/bar", help: "https://<help>" });
+        plugin(testplane, { enabled: true, token: "/foo/bar", help: "https://<help>" });
 
         expect(readTokenMock.default).toHaveBeenCalledTimes(1);
         expect(readTokenMock.default).toHaveBeenCalledWith("/foo/bar", "https://<help>");
@@ -69,10 +72,10 @@ describe("hermione-oauth", () => {
         readTokenMock.default.mockReturnValue("987654321");
 
         const [config1, config2] = [{ headers: { "<foo>": "<bar>" } }, { headers: { "<baz>": "<quux>" } }];
-        const hermione = hermioneMock({ "<bro1-id>": browser(config1), "<bro2-id>": browser(config2) });
+        const testplane = testplaneMock({ "<bro1-id>": browser(config1), "<bro2-id>": browser(config2) });
 
-        plugin(hermione, { enabled: true, token: "/foo/bar" });
-        hermione.emit(hermione.events.BEGIN);
+        plugin(testplane, { enabled: true, token: "/foo/bar" });
+        testplane.emit(testplane.events.BEGIN);
 
         expect(config1).toEqual({ headers: { "<foo>": "<bar>", Authorization: "OAuth 987654321" } });
         expect(config2).toEqual({ headers: { "<baz>": "<quux>", Authorization: "OAuth 987654321" } });
@@ -82,11 +85,11 @@ describe("hermione-oauth", () => {
         readTokenMock.default.mockReturnValue("987654321");
 
         const config = { headers: { Authorization: "<foo>" } };
-        const hermione = hermioneMock({ "<bro-id>": browser(config) });
+        const testplane = testplaneMock({ "<bro-id>": browser(config) });
 
-        plugin(hermione, { enabled: true, token: "/foo/bar" });
+        plugin(testplane, { enabled: true, token: "/foo/bar" });
 
-        hermione.emit(hermione.events.BEGIN);
+        testplane.emit(testplane.events.BEGIN);
 
         expect(config).toEqual({ headers: { Authorization: "<foo>" } });
     });

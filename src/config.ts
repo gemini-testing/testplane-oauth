@@ -49,7 +49,7 @@ export function parseConfig(options: Record<string, unknown>): PluginConfig {
             }),
             help: nonEmptyString("help"),
         }),
-        { envPrefix: "hermione_oauth_", cliPrefix: "--oauth-" },
+        { envPrefix: "testplane_oauth_", cliPrefix: "--oauth-" },
     );
 
     return parseOptions({ options, env, argv });
