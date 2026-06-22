@@ -3,11 +3,9 @@ import type { Parser } from "gemini-configparser";
 
 import { PluginOptionTypeError, PluginTokenOptionAbsenceError } from "./errors";
 
-export type PluginConfig = {
-    enabled: boolean;
-    token: string;
-    help: string;
-};
+export type PluginConfig =
+    | { enabled: true; token: string; help: string }
+    | { enabled: false; token?: string; help?: string };
 
 const isNonEmptyString = (v: unknown): boolean => typeof v === "string" && v !== "";
 
@@ -27,12 +25,6 @@ const boolean = (name: string): Parser<boolean> =>
         validate: assertType(name, v => typeof v === "boolean", "boolean"),
     });
 
-const nonEmptyString = (name: string): Parser<string> =>
-    option({
-        defaultValue: "",
-        validate: assertType(name, isNonEmptyString, "non empty string"),
-    });
-
 export function parseConfig(options: Record<string, unknown>): PluginConfig {
     const { env, argv } = process;
 
@@ -42,12 +34,19 @@ export function parseConfig(options: Record<string, unknown>): PluginConfig {
             token: option({
                 defaultValue: "",
                 validate: (v, config) => {
-                    if (!isNonEmptyString(v)) {
+                    if (!isNonEmptyString(v) && config.enabled) {
                         throw new PluginTokenOptionAbsenceError(config.help);
                     }
                 },
             }),
-            help: nonEmptyString("help"),
+            help: option({
+                defaultValue: "",
+                validate: (v, config) => {
+                    if (config.enabled) {
+                        assertType("help", isNonEmptyString, "non empty string")(v);
+                    }
+                },
+            }),
         }),
         { envPrefix: "testplane_oauth_", cliPrefix: "--oauth-" },
     );
