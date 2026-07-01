@@ -40,6 +40,10 @@ describe("config", () => {
             );
         });
 
+        test("should not throw if value is empty and plugin is disabled", () => {
+            expect(() => parseConfig(config({ enabled: false, token: "" }))).not.toThrow();
+        });
+
         test("should set passed value", () => {
             expect(parseConfig(config({ token: "123456789" })).token).toBe("123456789");
         });
@@ -52,6 +56,10 @@ describe("config", () => {
 
         test("should throw if passed value is an empty string", () => {
             expect(() => parseConfig(config({ help: "" }))).toThrow(/'help' option must be of a non empty string type/);
+        });
+
+        test("should not throw if value is an empty string and plugin is disabled", () => {
+            expect(() => parseConfig(config({ enabled: false, help: "" }))).not.toThrow();
         });
 
         test("should set passed value", () => {

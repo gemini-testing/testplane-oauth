@@ -19,7 +19,7 @@ describe("@testplane/oauth", () => {
     const testplaneMock = (browsers: Record<string, BrowserConfig>): Testplane => {
         const emitter = new EventEmitter() as any;
 
-        emitter.events = { BEGIN: "begin" }
+        emitter.events = { BEGIN: "begin" };
         emitter.config = {
             forBrowser: (id: string) => browsers[id],
             getBrowserIds: () => Object.keys(browsers),
